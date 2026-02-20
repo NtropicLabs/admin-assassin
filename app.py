@@ -14,7 +14,7 @@ st.set_page_config(
 # ── Global CSS ────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap');
 
 /* ── Reset & Base ── */
 *, *::before, *::after { box-sizing: border-box; }
@@ -87,33 +87,92 @@ html, body, [data-testid="stAppViewContainer"] {
     margin-top: auto;
 }
 
-/* ── Main header ── */
-.main-header {
-    padding: 2rem 0 1.5rem 0;
+/* ── Pixel art logo ── */
+.pixel-art-container {
+    background: #0a0d14;
+    border: 1px solid rgba(74,158,255,0.25);
+    border-radius: 12px;
+    padding: 12px;
+    display: inline-block;
+    box-shadow: 0 0 24px rgba(74,158,255,0.12), inset 0 0 20px rgba(0,0,0,0.4);
+}
+.pixel-grid {
+    display: grid;
+    grid-template-columns: repeat(11, 10px);
+    grid-template-rows: repeat(11, 10px);
+    gap: 2px;
+}
+.px {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+}
+.px-on {
+    background: #4A9EFF;
+    box-shadow: 0 0 6px rgba(74,158,255,0.7);
+}
+.px-off { background: transparent; }
+.terminal-header {
+    padding: 2.5rem 0 2rem 0;
     border-bottom: 1px solid #2D3141;
     margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
 }
-.main-header h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: 2.2rem;
-    font-weight: 800;
+.terminal-logo {
+    flex-shrink: 0;
+}
+.pixel-brain {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    line-height: 1.2;
+    color: #4A9EFF;
+    letter-spacing: 0.05em;
+    background: rgba(74, 158, 255, 0.06);
+    border: 1px solid rgba(74, 158, 255, 0.2);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    display: inline-block;
+    white-space: pre;
+    text-shadow: 0 0 12px rgba(74, 158, 255, 0.5);
+}
+.terminal-title {
+    flex: 1;
+}
+.terminal-title h1 {
+    font-family: 'Space Mono', monospace;
+    font-size: 2rem;
+    font-weight: 700;
     color: #FFFFFF;
     margin: 0 0 0.3rem 0;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.02em;
 }
-.main-header p {
+.terminal-title h1 span {
+    color: #4A9EFF;
+}
+.terminal-title p {
     color: #8B9CB6;
-    font-size: 0.9rem;
-    margin: 0;
-    font-weight: 300;
+    font-size: 0.85rem;
+    margin: 0 0 0.75rem 0;
+    font-family: 'DM Mono', monospace;
 }
-.accent-line {
-    width: 48px;
-    height: 3px;
-    background: #4A9EFF;
-    border-radius: 2px;
-    margin-top: 1rem;
+.terminal-badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
 }
+.t-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.t-badge-blue { background: rgba(74,158,255,0.12); color: #4A9EFF; border: 1px solid rgba(74,158,255,0.25); }
+.t-badge-green { background: rgba(0,196,140,0.1); color: #00C48C; border: 1px solid rgba(0,196,140,0.25); }
+.t-badge-grey { background: rgba(139,156,182,0.1); color: #8B9CB6; border: 1px solid rgba(139,156,182,0.2); }
 
 /* ── Inputs ── */
 [data-testid="stTextArea"] textarea {
@@ -238,46 +297,78 @@ html, body, [data-testid="stAppViewContainer"] {
 
 /* ── Output cards ── */
 .output-card {
-    background: #1E2130;
+    background: linear-gradient(145deg, #1E2130, #191C28);
     border: 1px solid #2D3141;
-    border-radius: 12px;
-    padding: 1.25rem 1.5rem;
+    border-radius: 16px;
+    padding: 1.5rem;
     margin-bottom: 1.25rem;
     height: 100%;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.output-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #4A9EFF, transparent);
+    border-radius: 16px 16px 0 0;
+}
+.output-card:hover {
+    border-color: rgba(74, 158, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 0 1px rgba(74,158,255,0.08);
 }
 .output-card h3 {
-    font-family: 'Syne', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 500;
     color: #4A9EFF;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    margin: 0 0 1rem 0;
+    margin: 0 0 1.25rem 0;
     padding-bottom: 0.75rem;
     border-bottom: 1px solid #2D3141;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 .output-card .content {
     font-size: 0.88rem;
-    line-height: 1.7;
+    line-height: 1.75;
     color: #C8D4E8;
     white-space: pre-wrap;
 }
 .soap-label {
     font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 500;
     color: #4A9EFF;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    margin: 0.75rem 0 0.2rem 0;
+    margin: 1rem 0 0.35rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.soap-label::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: #4A9EFF;
+    border-radius: 50%;
+    opacity: 0.6;
 }
 .soap-content {
-    font-size: 0.88rem;
-    line-height: 1.7;
+    font-size: 0.87rem;
+    line-height: 1.75;
     color: #C8D4E8;
-    margin-bottom: 0.5rem;
-    padding-left: 0.75rem;
-    border-left: 2px solid #2D3141;
+    margin-bottom: 0.25rem;
+    padding: 0.6rem 0.85rem;
+    background: rgba(255,255,255,0.03);
+    border-left: 2px solid rgba(74,158,255,0.3);
+    border-radius: 0 6px 6px 0;
 }
 
 /* ── Risk badge ── */
@@ -407,13 +498,43 @@ with st.sidebar:
 
     st.markdown('<div class="version-tag">v1.0 — Beta</div>', unsafe_allow_html=True)
 
+# ── Generate pixel brain ──────────────────────────────────────────────────────
+brain_map = [
+    [0,0,1,1,0,0,0,1,1,0,0],
+    [0,1,1,1,1,0,1,1,1,1,0],
+    [1,1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,0,1,1,1,0,1,1,1],
+    [0,1,1,1,1,1,1,1,1,1,0],
+    [0,0,1,1,1,1,1,1,1,0,0],
+    [0,0,0,1,1,1,1,1,0,0,0],
+    [0,0,0,1,0,1,0,1,0,0,0],
+    [0,0,0,1,1,1,1,1,0,0,0],
+    [0,0,0,0,1,1,1,0,0,0,0],
+]
+brain_html = "".join(
+    f'<div class="px {"px-on" if cell else "px-off"}"></div>'
+    for row in brain_map for cell in row
+)
+
 # ── Main panel ────────────────────────────────────────────────────────────────
-st.markdown("""
-<div class="main-header">
-    <h1>Admin Assassin</h1>
-    <p>Privacy-First Clinical Scribe for CBT Therapists</p>
-    <div class="accent-line"></div>
-</div>
+st.markdown(f"""
+<div class="terminal-header">
+    <div class="terminal-logo">
+        <div class="pixel-art-container">
+            <div class="pixel-grid">
+                {brain_html}
+            </div>
+        </div>
+    </div>
+    <div class="terminal-title">
+        <h1><span>Admin</span> Assassin</h1>
+        <p>// privacy-first clinical scribe for CBT therapists</p>
+        <div class="terminal-badges">
+            <span class="t-badge t-badge-blue">Claude Sonnet</span>
+            <span class="t-badge t-badge-green">CBT Clinical AI</span>
+            <span class="t-badge t-badge-grey">v1.0 Beta</span>
+        </div>
 """, unsafe_allow_html=True)
 
 # ── Input tabs ────────────────────────────────────────────────────────────────
