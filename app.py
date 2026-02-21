@@ -1,18 +1,74 @@
 import streamlit as st
 import json
+import html as html_lib
 import anthropic
 from datetime import datetime
 
-# ── Page config ──────────────────────────────────────────────────────────────
-st.set_page_config(
-    page_title="Admin Assassin — Clinical AI Scribe",
-    page_icon="🩺",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+# ── Constants ────────────────────────────────────────────────────────────────
 
-# ── Global CSS ────────────────────────────────────────────────────────────────
-st.markdown("""
+SYSTEM_PROMPT = """You are a senior CBT clinical supervisor with 20 years experience in NHS IAPT
+and Talking Therapies settings. Analyse the following therapy session transcript.
+
+Return your analysis in this exact JSON structure (no markdown, no backticks, raw JSON only):
+{
+  "risk_detected": true/false,
+  "risk_content": "exact quoted phrase if risk detected, else null",
+  "hot_thought": "the primary automatic thought identified",
+  "maintenance_cycle": "brief description of the CBT maintenance loop present",
+  "safety_behaviours": "any safety behaviours identified, else 'None identified'",
+  "soap_note": {
+    "subjective": "patient's reported experience in their own words",
+    "objective": "observable clinical data, measures, therapist observations",
+    "assessment": "clinical formulation, CBT model, maintenance mechanisms",
+    "plan": "intervention used, homework set, next session focus"
+  },
+  "gp_letter": "full NHS-style GP letter draft",
+  "risk_summary": "brief clinical risk summary for documentation"
+}
+
+Risk detection: flag if transcript contains ANY reference to suicidal ideation,
+self-harm, harm to others, or expressions of hopelessness about the future.
+Flag conservatively — when in doubt, flag."""
+
+BRAIN_MAP = [
+    [0,0,1,1,0,0,0,1,1,0,0],
+    [0,1,1,1,1,0,1,1,1,1,0],
+    [1,1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,0,1,1,1,0,1,1,1],
+    [0,1,1,1,1,1,1,1,1,1,0],
+    [0,0,1,1,1,1,1,1,1,0,0],
+    [0,0,0,1,1,1,1,1,0,0,0],
+    [0,0,0,1,0,1,0,1,0,0,0],
+    [0,0,0,1,1,1,1,1,0,0,0],
+    [0,0,0,0,1,1,1,0,0,0,0],
+]
+
+
+# ── Helpers ──────────────────────────────────────────────────────────────────
+
+def safe(text):
+    """Escape HTML entities in AI-generated text to prevent XSS."""
+    if text is None:
+        return "—"
+    return html_lib.escape(str(text))
+
+
+def render_pixel_brain():
+    """Generate the pixel art brain HTML grid."""
+    cells = "".join(
+        f'<div class="px {"px-on" if cell else "px-off"}"></div>'
+        for row in BRAIN_MAP for cell in row
+    )
+    return f"""
+    <div class="pixel-art-container">
+        <div class="pixel-grid">{cells}</div>
+    </div>"""
+
+
+def inject_css():
+    """Inject all custom CSS into the Streamlit app."""
+    st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap');
 
@@ -451,18 +507,42 @@ label, [data-testid="stWidgetLabel"] {
 
 /* ── Divider ── */
 hr { border-color: #2D3141 !important; }
+
+/* ── Expander (for copy sections) ── */
+[data-testid="stExpander"] {
+    border: 1px solid #2D3141 !important;
+    border-radius: 8px !important;
+    background: #12151E !important;
+}
+[data-testid="stExpander"] summary {
+    color: #8B9CB6 !important;
+    font-family: 'DM Mono', monospace !important;
+    font-size: 0.75rem !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
+
+# ── Page config ──────────────────────────────────────────────────────────────
+
+st.set_page_config(
+    page_title="Admin Assassin — Clinical AI Scribe",
+    page_icon="🩺",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+inject_css()
+
 # ── Session state init ────────────────────────────────────────────────────────
+
 if "history" not in st.session_state:
     st.session_state.history = []
 if "last_result" not in st.session_state:
     st.session_state.last_result = None
-if "copied" not in st.session_state:
-    st.session_state.copied = {}
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
+
 with st.sidebar:
     st.markdown("""
     <div class="sidebar-logo">
@@ -475,15 +555,28 @@ with st.sidebar:
 
     st.markdown("---")
 
+    # New session button
+    if st.session_state.last_result is not None:
+        if st.button("+ New Session", use_container_width=True):
+            st.session_state.last_result = None
+            st.rerun()
+
     # Session history
-    st.markdown('<p style="font-size:0.72rem;color:#8B9CB6;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.75rem;">Recent Sessions</p>', unsafe_allow_html=True)
+    st.markdown(
+        '<p style="font-size:0.72rem;color:#8B9CB6;letter-spacing:0.1em;'
+        'text-transform:uppercase;margin-bottom:0.75rem;">Recent Sessions</p>',
+        unsafe_allow_html=True,
+    )
 
     if st.session_state.history:
         for i, session in enumerate(reversed(st.session_state.history[-5:])):
             if st.button(f"📋 Session {session['time']}", key=f"hist_{i}", use_container_width=True):
                 st.session_state.last_result = session["result"]
     else:
-        st.markdown('<p style="font-size:0.78rem;color:#3D4560;font-style:italic;">No sessions yet</p>', unsafe_allow_html=True)
+        st.markdown(
+            '<p style="font-size:0.78rem;color:#3D4560;font-style:italic;">No sessions yet</p>',
+            unsafe_allow_html=True,
+        )
 
     st.markdown("---")
 
@@ -498,54 +591,41 @@ with st.sidebar:
 
     st.markdown('<div class="version-tag">v1.0 — Beta</div>', unsafe_allow_html=True)
 
-# ── Generate pixel brain ──────────────────────────────────────────────────────
-brain_map = [
-    [0,0,1,1,0,0,0,1,1,0,0],
-    [0,1,1,1,1,0,1,1,1,1,0],
-    [1,1,1,1,1,1,1,1,1,1,1],
-    [1,1,1,1,1,1,1,1,1,1,1],
-    [1,1,1,0,1,1,1,0,1,1,1],
-    [0,1,1,1,1,1,1,1,1,1,0],
-    [0,0,1,1,1,1,1,1,1,0,0],
-    [0,0,0,1,1,1,1,1,0,0,0],
-    [0,0,0,1,0,1,0,1,0,0,0],
-    [0,0,0,1,1,1,1,1,0,0,0],
-    [0,0,0,0,1,1,1,0,0,0,0],
-]
-brain_html = "".join(
-    f'<div class="px {"px-on" if cell else "px-off"}"></div>'
-    for row in brain_map for cell in row
-)
+# ── Main panel header ────────────────────────────────────────────────────────
 
-# ── Main panel ────────────────────────────────────────────────────────────────
+brain_html = render_pixel_brain()
+
 st.markdown(f"""
 <div class="terminal-header">
     <div class="terminal-logo">
-        <div class="pixel-art-container">
-            <div class="pixel-grid">
-                {brain_html}
-            </div>
-        </div>
+        {brain_html}
     </div>
     <div class="terminal-title">
         <h1><span>Admin</span> Assassin</h1>
         <p>// privacy-first clinical scribe for CBT therapists</p>
         <div class="terminal-badges">
-            <span class="t-badge t-badge-blue">Claude Sonnet</span>
+            <span class="t-badge t-badge-blue">Claude Opus</span>
             <span class="t-badge t-badge-green">CBT Clinical AI</span>
             <span class="t-badge t-badge-grey">v1.0 Beta</span>
         </div>
+    </div>
+</div>
 """, unsafe_allow_html=True)
 
 # ── Input tabs ────────────────────────────────────────────────────────────────
+
 tab1, tab2 = st.tabs(["📝  Paste Transcript", "🎙  Upload Audio  (Coming in V2)"])
 
 with tab1:
     transcript = st.text_area(
         label="Session Transcript",
         height=280,
-        placeholder="Paste your session transcript here.\n\nFor best results, include the full session dialogue.\nPatient name is not required — use initials or remove entirely.",
-        label_visibility="collapsed"
+        placeholder=(
+            "Paste your session transcript here.\n\n"
+            "For best results, include the full session dialogue.\n"
+            "Patient name is not required — use initials or remove entirely."
+        ),
+        label_visibility="collapsed",
     )
 
     generate_btn = st.button("Generate Clinical Documentation", type="primary")
@@ -559,66 +639,43 @@ with tab2:
     </div>
     """, unsafe_allow_html=True)
 
-# ── System prompt ─────────────────────────────────────────────────────────────
-SYSTEM_PROMPT = """You are a senior CBT clinical supervisor with 20 years experience in NHS IAPT 
-and Talking Therapies settings. Analyse the following therapy session transcript.
-
-Return your analysis in this exact JSON structure (no markdown, no backticks, raw JSON only):
-{
-  "risk_detected": true/false,
-  "risk_content": "exact quoted phrase if risk detected, else null",
-  "hot_thought": "the primary automatic thought identified",
-  "maintenance_cycle": "brief description of the CBT maintenance loop present",
-  "safety_behaviours": "any safety behaviours identified, else 'None identified'",
-  "soap_note": {
-    "subjective": "patient's reported experience in their own words",
-    "objective": "observable clinical data, measures, therapist observations",
-    "assessment": "clinical formulation, CBT model, maintenance mechanisms",
-    "plan": "intervention used, homework set, next session focus"
-  },
-  "gp_letter": "full NHS-style GP letter draft",
-  "risk_summary": "brief clinical risk summary for documentation"
-}
-
-Risk detection: flag if transcript contains ANY reference to suicidal ideation, 
-self-harm, harm to others, or expressions of hopelessness about the future.
-Flag conservatively — when in doubt, flag."""
-
 # ── Generation logic ──────────────────────────────────────────────────────────
+
 if generate_btn:
     if not api_key:
-        st.error("⚠️ Please enter your OpenAI API key in the sidebar.")
+        st.error("Please enter your Anthropic API key in the sidebar.")
     elif not transcript.strip():
-        st.error("⚠️ Please paste a session transcript before generating.")
+        st.error("Please paste a session transcript before generating.")
     else:
         with st.spinner("Analysing transcript..."):
             try:
                 client = anthropic.Anthropic(api_key=api_key)
                 response = client.messages.create(
-                    model="claude-sonnet-4-6",
-                    max_tokens=4096,
+                    model="claude-opus-4-6",
+                    max_tokens=8192,
                     system=SYSTEM_PROMPT,
                     messages=[
                         {"role": "user", "content": transcript}
-                    ]
+                    ],
                 )
-                raw = response.content[0].text
+                raw = response.content[0].text.strip()
                 # Strip markdown fences if present
-                raw = raw.strip()
                 if raw.startswith("```"):
                     raw = raw.split("\n", 1)[1].rsplit("```", 1)[0]
                 result = json.loads(raw)
                 st.session_state.last_result = result
                 st.session_state.history.append({
                     "time": datetime.now().strftime("%H:%M"),
-                    "result": result
+                    "result": result,
                 })
+                st.toast("Clinical documentation generated successfully.")
             except json.JSONDecodeError:
-                st.error("⚠️ The AI returned an unexpected format. Please try again.")
+                st.error("The AI returned an unexpected format. Please try again.")
             except Exception as e:
-                st.error(f"⚠️ Error: {str(e)}")
+                st.error(f"Error: {e}")
 
 # ── Output rendering ──────────────────────────────────────────────────────────
+
 if st.session_state.last_result:
     r = st.session_state.last_result
 
@@ -628,32 +685,37 @@ if st.session_state.last_result:
         <div class="risk-banner">
             <h3>⚠️ CLINICAL RISK DETECTED — Review Required</h3>
             <p>The following content has been flagged. This requires immediate clinical review before proceeding.</p>
-            <div class="risk-quote">"{r.get('risk_content', 'Risk phrase not extracted')}"</div>
+            <div class="risk-quote">"{safe(r.get('risk_content', 'Risk phrase not extracted'))}"</div>
         </div>
         """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Top row — SOAP + GP Letter
+    # ── Top row: SOAP + GP Letter ─────────────────────────────────────────────
     col1, col2 = st.columns(2)
 
     with col1:
         soap = r.get("soap_note", {})
-        soap_text = f"S: {soap.get('subjective','')}\nO: {soap.get('objective','')}\nA: {soap.get('assessment','')}\nP: {soap.get('plan','')}"
         st.markdown(f"""
         <div class="output-card">
             <h3>📋 SOAP Note</h3>
             <div class="soap-label">S — Subjective</div>
-            <div class="soap-content">{soap.get('subjective', '—')}</div>
+            <div class="soap-content">{safe(soap.get('subjective'))}</div>
             <div class="soap-label">O — Objective</div>
-            <div class="soap-content">{soap.get('objective', '—')}</div>
+            <div class="soap-content">{safe(soap.get('objective'))}</div>
             <div class="soap-label">A — Assessment</div>
-            <div class="soap-content">{soap.get('assessment', '—')}</div>
+            <div class="soap-content">{safe(soap.get('assessment'))}</div>
             <div class="soap-label">P — Plan</div>
-            <div class="soap-content">{soap.get('plan', '—')}</div>
+            <div class="soap-content">{safe(soap.get('plan'))}</div>
         </div>
         """, unsafe_allow_html=True)
-        if st.button("Copy SOAP Note", key="copy_soap"):
+        soap_text = (
+            f"S: {soap.get('subjective', '')}\n"
+            f"O: {soap.get('objective', '')}\n"
+            f"A: {soap.get('assessment', '')}\n"
+            f"P: {soap.get('plan', '')}"
+        )
+        with st.expander("📋 Copy SOAP Note"):
             st.code(soap_text, language=None)
 
     with col2:
@@ -661,40 +723,48 @@ if st.session_state.last_result:
         st.markdown(f"""
         <div class="output-card">
             <h3>✉️ GP Letter</h3>
-            <div class="content">{gp_letter}</div>
+            <div class="content">{safe(gp_letter)}</div>
         </div>
         """, unsafe_allow_html=True)
-        if st.button("Copy GP Letter", key="copy_gp"):
+        with st.expander("📋 Copy GP Letter"):
             st.code(gp_letter, language=None)
 
-    # Bottom row — CBT Formulation + Risk Summary
+    # ── Bottom row: CBT Formulation + Risk Summary ────────────────────────────
     col3, col4 = st.columns(2)
 
     with col3:
-        formulation_text = f"Hot Thought: {r.get('hot_thought','')}\n\nMaintenance Cycle: {r.get('maintenance_cycle','')}\n\nSafety Behaviours: {r.get('safety_behaviours','')}"
         st.markdown(f"""
         <div class="output-card">
             <h3>🧠 CBT Formulation</h3>
             <div class="soap-label">Hot Thought</div>
-            <div class="soap-content">{r.get('hot_thought', '—')}</div>
+            <div class="soap-content">{safe(r.get('hot_thought'))}</div>
             <div class="soap-label">Maintenance Cycle</div>
-            <div class="soap-content">{r.get('maintenance_cycle', '—')}</div>
+            <div class="soap-content">{safe(r.get('maintenance_cycle'))}</div>
             <div class="soap-label">Safety Behaviours</div>
-            <div class="soap-content">{r.get('safety_behaviours', '—')}</div>
+            <div class="soap-content">{safe(r.get('safety_behaviours'))}</div>
         </div>
         """, unsafe_allow_html=True)
-        if st.button("Copy Formulation", key="copy_form"):
+        formulation_text = (
+            f"Hot Thought: {r.get('hot_thought', '')}\n\n"
+            f"Maintenance Cycle: {r.get('maintenance_cycle', '')}\n\n"
+            f"Safety Behaviours: {r.get('safety_behaviours', '')}"
+        )
+        with st.expander("📋 Copy Formulation"):
             st.code(formulation_text, language=None)
 
     with col4:
-        risk_badge = '<div class="badge-risk">⚠ Risk Detected</div>' if r.get("risk_detected") else '<div class="badge-safe">✓ No Risk Identified</div>'
-        risk_text = r.get('risk_summary', '—')
+        risk_badge = (
+            '<div class="badge-risk">⚠ Risk Detected</div>'
+            if r.get("risk_detected")
+            else '<div class="badge-safe">✓ No Risk Identified</div>'
+        )
+        risk_text = r.get("risk_summary", "—")
         st.markdown(f"""
         <div class="output-card">
             <h3>🛡 Risk Summary</h3>
             {risk_badge}
-            <div class="content">{risk_text}</div>
+            <div class="content">{safe(risk_text)}</div>
         </div>
         """, unsafe_allow_html=True)
-        if st.button("Copy Risk Summary", key="copy_risk"):
+        with st.expander("📋 Copy Risk Summary"):
             st.code(risk_text, language=None)
