@@ -60,10 +60,7 @@ def render_pixel_brain():
         f'<div class="px {"px-on" if cell else "px-off"}"></div>'
         for row in BRAIN_MAP for cell in row
     )
-    return f"""
-    <div class="pixel-art-container">
-        <div class="pixel-grid">{cells}</div>
-    </div>"""
+    return f'<div class="pixel-art-container"><div class="pixel-grid">{cells}</div></div>'
 
 
 def inject_css():
@@ -595,22 +592,19 @@ with st.sidebar:
 
 brain_html = render_pixel_brain()
 
-st.markdown(f"""
-<div class="terminal-header">
-    <div class="terminal-logo">
-        {brain_html}
-    </div>
-    <div class="terminal-title">
-        <h1><span>Admin</span> Assassin</h1>
-        <p>// privacy-first clinical scribe for CBT therapists</p>
-        <div class="terminal-badges">
-            <span class="t-badge t-badge-blue">Claude Opus</span>
-            <span class="t-badge t-badge-green">CBT Clinical AI</span>
-            <span class="t-badge t-badge-grey">v1.0 Beta</span>
-        </div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+st.markdown(
+    f'<div class="terminal-header">'
+    f'<div class="terminal-logo">{brain_html}</div>'
+    f'<div class="terminal-title">'
+    f'<h1><span>Admin</span> Assassin</h1>'
+    f'<p>// privacy-first clinical scribe for CBT therapists</p>'
+    f'<div class="terminal-badges">'
+    f'<span class="t-badge t-badge-blue">Claude Opus</span>'
+    f'<span class="t-badge t-badge-green">CBT Clinical AI</span>'
+    f'<span class="t-badge t-badge-grey">v1.0 Beta</span>'
+    f'</div></div></div>',
+    unsafe_allow_html=True,
+)
 
 # ── Input tabs ────────────────────────────────────────────────────────────────
 
