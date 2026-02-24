@@ -17,22 +17,25 @@ st.markdown("""
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap');
 
 :root {
-    --bg: #0C0E14;
-    --surface: #13161F;
-    --surface-2: #1A1D28;
-    --border: #252836;
-    --border-light: #2E3347;
-    --text-primary: #E8ECF4;
+    --bg: #090B10;
+    --surface: #111318;
+    --surface-2: #181B24;
+    --border: #1E2130;
+    --border-light: #272B3D;
+    --text-primary: #EDF0F7;
     --text-secondary: #8892A4;
-    --text-muted: #4A5268;
+    --text-muted: #434860;
     --accent: #3B82F6;
     --accent-hover: #2563EB;
     --accent-dim: rgba(59,130,246,0.1);
     --accent-border: rgba(59,130,246,0.2);
+    --gold: #C8A96E;
+    --gold-dim: rgba(200,169,110,0.08);
+    --gold-border: rgba(200,169,110,0.25);
     --green: #10B981;
     --green-dim: rgba(16,185,129,0.08);
     --red: #EF4444;
-    --red-dim: rgba(239,68,68,0.08);
+    --red-dim: rgba(239,68,68,0.06);
     --slate: #64748B;
 }
 
@@ -71,17 +74,17 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
 
 /* ── Sidebar ── */
 .sidebar-brand {
-    padding: 2rem 1.5rem 1.5rem;
+    padding: 2.25rem 1.75rem 1.75rem;
     border-bottom: 1px solid var(--border);
     margin-bottom: 1.75rem;
 }
 .sidebar-brand h2 {
     font-family: 'Instrument Serif', serif;
-    font-size: 1.35rem;
+    font-size: 1.4rem;
     font-weight: 400;
     color: var(--text-primary);
     letter-spacing: -0.01em;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.25rem;
 }
 .sidebar-brand span { color: var(--accent); }
 .sidebar-brand p {
@@ -97,18 +100,18 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
     color: var(--text-muted);
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    padding: 0 1.5rem;
+    padding: 0 1.75rem;
     margin-bottom: 0.6rem;
 }
 .privacy-box {
-    margin: 1.5rem;
-    padding: 1rem;
+    margin: 1.5rem 1.25rem;
+    padding: 1.1rem 1.25rem;
     background: rgba(59,130,246,0.04);
     border: 1px solid var(--accent-border);
-    border-radius: 8px;
-    font-size: 0.75rem;
+    border-radius: 10px;
+    font-size: 0.76rem;
     color: var(--text-secondary);
-    line-height: 1.6;
+    line-height: 1.7;
 }
 .privacy-box strong {
     display: block;
@@ -117,12 +120,12 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
     color: var(--accent);
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.6rem;
 }
 .version-tag {
     font-size: 0.67rem;
     color: var(--text-muted);
-    padding: 1.5rem;
+    padding: 1.5rem 1.75rem;
     font-family: 'DM Mono', monospace;
 }
 
@@ -142,7 +145,7 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
     padding: 14px;
     display: inline-block;
     flex-shrink: 0;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
 }
 .pixel-grid {
     display: grid;
@@ -183,7 +186,27 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
 }
 .chip-blue { background: var(--accent-dim); color: #93C5FD; border: 1px solid var(--accent-border); }
 .chip-slate { background: rgba(100,116,139,0.1); color: var(--slate); border: 1px solid rgba(100,116,139,0.2); }
-.chip-grey { background: rgba(74,82,104,0.15); color: var(--text-muted); border: 1px solid var(--border-light); }
+.chip-grey { background: rgba(74,82,104,0.12); color: var(--text-muted); border: 1px solid var(--border-light); }
+
+/* ── Transcript workspace ── */
+.workspace-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+}
+.workspace-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.workspace-hint {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
 
 /* ── Inputs ── */
 [data-testid="stTextArea"] textarea {
@@ -192,15 +215,15 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
     border-radius: 10px !important;
     color: var(--text-primary) !important;
     font-family: 'DM Sans', sans-serif !important;
-    font-size: 0.9rem !important;
-    line-height: 1.7 !important;
-    padding: 1.1rem 1.25rem !important;
-    transition: border-color 0.15s ease !important;
+    font-size: 0.925rem !important;
+    line-height: 1.8 !important;
+    padding: 1.25rem 1.5rem !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
 }
 [data-testid="stTextArea"] textarea::placeholder { color: var(--text-muted) !important; }
 [data-testid="stTextArea"] textarea:focus {
     border-color: var(--accent) !important;
-    box-shadow: 0 0 0 3px rgba(59,130,246,0.1) !important;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.08) !important;
     outline: none !important;
 }
 [data-testid="stTextInput"] input {
@@ -214,7 +237,7 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
 }
 [data-testid="stTextInput"] input:focus {
     border-color: var(--accent) !important;
-    box-shadow: 0 0 0 3px rgba(59,130,246,0.1) !important;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.08) !important;
 }
 
 /* ── Tabs ── */
@@ -256,12 +279,12 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
     width: 100% !important;
     letter-spacing: 0.01em !important;
     transition: background 0.15s ease, box-shadow 0.15s ease !important;
-    margin-top: 1rem !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+    margin-top: 0.75rem !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
 }
 [data-testid="stButton"] > button[kind="primary"]:hover {
     background: var(--accent-hover) !important;
-    box-shadow: 0 4px 16px rgba(59,130,246,0.35) !important;
+    box-shadow: 0 4px 20px rgba(59,130,246,0.3) !important;
     transform: none !important;
 }
 [data-testid="stButton"] > button[kind="secondary"] {
@@ -284,15 +307,16 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
 /* ── Risk banner ── */
 .risk-banner {
     background: var(--red-dim);
-    border: 1.5px solid var(--red);
-    border-radius: 10px;
+    border: none;
+    border-left: 3px solid var(--red);
+    border-radius: 0 10px 10px 0;
     padding: 1.25rem 1.5rem;
     margin-bottom: 2rem;
-    animation: pulse-red 2.5s ease-in-out infinite;
+    animation: pulse-red 4s ease-in-out infinite;
 }
 @keyframes pulse-red {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.15); }
-    50% { box-shadow: 0 0 0 6px rgba(239,68,68,0); }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.1); }
+    50% { box-shadow: 0 0 0 4px rgba(239,68,68,0); }
 }
 .risk-banner h3 {
     color: var(--red);
@@ -309,8 +333,8 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
     font-weight: 400;
 }
 .risk-quote {
-    background: rgba(239,68,68,0.1);
-    border-left: 2px solid var(--red);
+    background: rgba(239,68,68,0.08);
+    border-left: 2px solid rgba(239,68,68,0.5);
     border-radius: 0 4px 4px 0;
     padding: 0.65rem 1rem;
     font-style: italic;
@@ -336,18 +360,22 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 1.75rem;
+    padding: 2rem 2.25rem;
     margin-bottom: 1.5rem;
     position: relative;
     overflow: hidden;
-    transition: border-color 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.25);
 }
-.output-card:hover { border-color: var(--border-light); }
+.output-card:hover {
+    border-color: var(--border-light);
+    box-shadow: 0 4px 28px rgba(0,0,0,0.35);
+}
 .output-card::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 2px;
+    height: 3px;
     border-radius: 12px 12px 0 0;
 }
 .card-soap::before { background: var(--accent); }
@@ -371,7 +399,7 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
 }
 .output-card .content {
     font-size: 0.875rem;
-    line-height: 1.8;
+    line-height: 1.9;
     color: var(--text-secondary);
     white-space: pre-wrap;
 }
@@ -383,15 +411,16 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
     color: var(--accent);
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    margin: 1.25rem 0 0.5rem;
+    margin: 1.5rem 0 0.5rem;
 }
+.soap-label:first-of-type { margin-top: 0; }
 .soap-content {
     font-size: 0.875rem;
-    line-height: 1.8;
+    line-height: 1.85;
     color: var(--text-secondary);
-    padding: 0.75rem 1rem;
+    padding: 0.85rem 1.1rem;
     background: rgba(255,255,255,0.02);
-    border-left: 2px solid var(--border-light);
+    border-left: 3px solid var(--border-light);
     border-radius: 0 6px 6px 0;
 }
 
@@ -399,28 +428,30 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
 .badge-safe {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.4rem;
     background: var(--green-dim);
-    border: 1px solid rgba(16,185,129,0.25);
+    border: 1px solid rgba(16,185,129,0.2);
     color: var(--green);
     border-radius: 20px;
-    padding: 0.25rem 0.75rem;
+    padding: 0.3rem 0.9rem;
     font-size: 0.75rem;
-    font-weight: 500;
+    font-weight: 600;
     margin-bottom: 1rem;
+    letter-spacing: 0.02em;
 }
 .badge-risk {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.4rem;
     background: var(--red-dim);
-    border: 1px solid rgba(239,68,68,0.25);
+    border: 1px solid rgba(239,68,68,0.2);
     color: var(--red);
     border-radius: 20px;
-    padding: 0.25rem 0.75rem;
+    padding: 0.3rem 0.9rem;
     font-size: 0.75rem;
-    font-weight: 500;
+    font-weight: 600;
     margin-bottom: 1rem;
+    letter-spacing: 0.02em;
 }
 
 /* ── Session history ── */
@@ -512,7 +543,7 @@ with st.sidebar:
 
     st.markdown("""
     <div class="privacy-box">
-        <strong>🔒 Privacy Notice</strong><br><br>
+        <strong>🔒 Privacy Notice</strong>
         This tool processes anonymised transcripts only.
         All AI output requires clinician review before use.
         No patient data is stored or retained.
@@ -566,6 +597,13 @@ st.markdown(f"""
 tab1, tab2 = st.tabs(["📝  Paste Transcript", "🎙  Upload Audio  (Coming in V2)"])
 
 with tab1:
+    st.markdown("""
+    <div class="workspace-header">
+        <span class="workspace-label">Session Transcript</span>
+        <span class="workspace-hint">Use initials — anonymised transcripts only</span>
+    </div>
+    """, unsafe_allow_html=True)
+
     transcript = st.text_area(
         label="Session Transcript",
         height=280,
@@ -573,7 +611,9 @@ with tab1:
         label_visibility="collapsed"
     )
 
-    generate_btn = st.button("Generate Clinical Documentation", type="primary")
+    _, btn_col = st.columns([2, 1])
+    with btn_col:
+        generate_btn = st.button("Generate Documentation", type="primary")
 
 with tab2:
     st.markdown("""
@@ -706,7 +746,7 @@ Return ONLY raw JSON — no markdown, no backticks, no preamble:
 # ── Generation logic ──────────────────────────────────────────────────────────
 if generate_btn:
     if not api_key:
-        st.error("⚠️ Please enter your OpenAI API key in the sidebar.")
+        st.error("⚠️ Please enter your Anthropic API key in the sidebar.")
     elif not transcript.strip():
         st.error("⚠️ Please paste a session transcript before generating.")
     else:
