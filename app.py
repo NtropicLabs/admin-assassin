@@ -520,6 +520,8 @@ if "last_result" not in st.session_state:
     st.session_state.last_result = None
 if "copied" not in st.session_state:
     st.session_state.copied = {}
+if "api_key" not in st.session_state:
+    st.session_state.api_key = ""
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
@@ -529,8 +531,6 @@ with st.sidebar:
         <p>Clinical AI Scribe</p>
     </div>
     """, unsafe_allow_html=True)
-
-    api_key = st.text_input("Anthropic API Key", type="password", placeholder="sk-ant-...")
 
     st.markdown("---")
 
@@ -597,6 +597,22 @@ st.markdown(f"""
     </div>
 </div>
 """, unsafe_allow_html=True)
+
+# ── API Key ───────────────────────────────────────────────────────────────────
+with st.expander("🔑  Anthropic API Key", expanded=not bool(st.session_state.api_key)):
+    _key_input = st.text_input(
+        "Anthropic API Key",
+        type="password",
+        placeholder="sk-ant-...",
+        value=st.session_state.api_key,
+        label_visibility="collapsed"
+    )
+    if _key_input:
+        st.session_state.api_key = _key_input
+    if st.session_state.api_key:
+        st.caption("✅  API key saved for this session")
+
+api_key = st.session_state.api_key
 
 # ── Input tabs ────────────────────────────────────────────────────────────────
 tab1, tab2 = st.tabs(["📝  Paste Transcript", "🎙  Upload Audio  (Coming in V2)"])
