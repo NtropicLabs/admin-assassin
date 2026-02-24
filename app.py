@@ -17,25 +17,25 @@ st.markdown("""
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap');
 
 :root {
-    --bg: #090B10;
-    --surface: #111318;
-    --surface-2: #181B24;
-    --border: #1E2130;
-    --border-light: #272B3D;
-    --text-primary: #EDF0F7;
-    --text-secondary: #8892A4;
-    --text-muted: #434860;
-    --accent: #3B82F6;
-    --accent-hover: #2563EB;
-    --accent-dim: rgba(59,130,246,0.1);
-    --accent-border: rgba(59,130,246,0.2);
-    --gold: #C8A96E;
-    --gold-dim: rgba(200,169,110,0.08);
-    --gold-border: rgba(200,169,110,0.25);
-    --green: #10B981;
-    --green-dim: rgba(16,185,129,0.08);
-    --red: #EF4444;
-    --red-dim: rgba(239,68,68,0.06);
+    --bg: #F5F7FA;
+    --surface: #FFFFFF;
+    --surface-2: #EEF1F6;
+    --border: #E2E8F0;
+    --border-light: #CBD5E1;
+    --text-primary: #0F172A;
+    --text-secondary: #374151;
+    --text-muted: #94A3B8;
+    --accent: #2563EB;
+    --accent-hover: #1D4ED8;
+    --accent-dim: rgba(37,99,235,0.08);
+    --accent-border: rgba(37,99,235,0.2);
+    --gold: #B45309;
+    --gold-dim: rgba(180,83,9,0.08);
+    --gold-border: rgba(180,83,9,0.2);
+    --green: #059669;
+    --green-dim: rgba(5,150,105,0.08);
+    --red: #DC2626;
+    --red-dim: rgba(220,38,38,0.06);
     --slate: #64748B;
 }
 
@@ -65,8 +65,8 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
     opacity: 1 !important;
     pointer-events: auto !important;
     z-index: 9999 !important;
-    background: var(--surface) !important;
-    border: 1px solid var(--border) !important;
+    background: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
     border-radius: 0 8px 8px 0 !important;
 }
 [data-testid="stSidebarCollapseButton"] {
@@ -150,7 +150,7 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
     padding: 14px;
     display: inline-block;
     flex-shrink: 0;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
 }
 .pixel-grid {
     display: grid;
@@ -189,7 +189,7 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
     letter-spacing: 0.04em;
     font-family: 'DM Sans', sans-serif;
 }
-.chip-blue { background: var(--accent-dim); color: #93C5FD; border: 1px solid var(--accent-border); }
+.chip-blue { background: var(--accent-dim); color: #1E40AF; border: 1px solid var(--accent-border); }
 .chip-slate { background: rgba(100,116,139,0.1); color: var(--slate); border: 1px solid rgba(100,116,139,0.2); }
 .chip-grey { background: rgba(74,82,104,0.12); color: var(--text-muted); border: 1px solid var(--border-light); }
 
@@ -332,19 +332,19 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
     letter-spacing: 0.01em;
 }
 .risk-banner p {
-    color: #FCA5A5;
+    color: #B91C1C;
     font-size: 0.83rem;
     margin-bottom: 0.85rem;
     font-weight: 400;
 }
 .risk-quote {
-    background: rgba(239,68,68,0.08);
-    border-left: 2px solid rgba(239,68,68,0.5);
+    background: rgba(220,38,38,0.06);
+    border-left: 2px solid rgba(220,38,38,0.4);
     border-radius: 0 4px 4px 0;
     padding: 0.65rem 1rem;
     font-style: italic;
     font-size: 0.85rem;
-    color: #FCA5A5;
+    color: #B91C1C;
     line-height: 1.6;
 }
 
@@ -370,11 +370,11 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
     position: relative;
     overflow: hidden;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.25);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
 }
 .output-card:hover {
     border-color: var(--border-light);
-    box-shadow: 0 4px 28px rgba(0,0,0,0.35);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
 .output-card::before {
     content: '';
@@ -424,7 +424,7 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
     line-height: 1.85;
     color: var(--text-secondary);
     padding: 0.85rem 1.1rem;
-    background: rgba(255,255,255,0.02);
+    background: rgba(0,0,0,0.02);
     border-left: 3px solid var(--border-light);
     border-radius: 0 6px 6px 0;
 }
