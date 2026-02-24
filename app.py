@@ -62,6 +62,9 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
 [data-testid="collapsedControl"] {
     display: flex !important;
     visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    z-index: 9999 !important;
     background: var(--surface) !important;
     border: 1px solid var(--border) !important;
     border-radius: 0 8px 8px 0 !important;
@@ -69,6 +72,8 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
 [data-testid="stSidebarCollapseButton"] {
     display: flex !important;
     visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
     color: var(--text-secondary) !important;
 }
 
