@@ -41,13 +41,25 @@ st.markdown("""
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html {
+    color-scheme: light only !important;
+}
+
 html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
     background: var(--bg) !important;
-    color: var(--text-primary);
+    color: var(--text-primary) !important;
     font-family: 'DM Sans', sans-serif;
     font-size: 15px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-color-scheme: dark) {
+    html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
+        background: var(--bg) !important;
+        color: var(--text-primary) !important;
+    }
+    [data-testid="stSidebar"] { background: var(--surface) !important; }
 }
 
 [data-testid="stSidebar"] {

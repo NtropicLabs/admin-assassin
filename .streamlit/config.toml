@@ -4,3 +4,6 @@ primaryColor = "#2563EB"
 backgroundColor = "#F5F7FA"
 secondaryBackgroundColor = "#FFFFFF"
 textColor = "#0F172A"
+
+[browser]
+gatherUsageStats = false
