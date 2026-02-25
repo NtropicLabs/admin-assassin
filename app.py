@@ -5,523 +5,161 @@ from datetime import datetime
 
 # ── Page config ──────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="Admin Assassin — Clinical AI Scribe",
-    page_icon="🩺",
+    page_title="Admin Assassin | Clinical Intelligence",
+    page_icon="⬛",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# ── Global CSS ────────────────────────────────────────────────────────────────
+# ── Global CSS (Linear/Vercel Aesthetic) ──────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-:root {
-    --bg: #F5F7FA;
-    --surface: #FFFFFF;
-    --surface-2: #EEF1F6;
-    --border: #E2E8F0;
-    --border-light: #CBD5E1;
-    --text-primary: #0F172A;
-    --text-secondary: #374151;
-    --text-muted: #94A3B8;
-    --accent: #2563EB;
-    --accent-hover: #1D4ED8;
-    --accent-dim: rgba(37,99,235,0.08);
-    --accent-border: rgba(37,99,235,0.2);
-    --gold: #B45309;
-    --gold-dim: rgba(180,83,9,0.08);
-    --gold-border: rgba(180,83,9,0.2);
-    --green: #059669;
-    --green-dim: rgba(5,150,105,0.08);
-    --red: #DC2626;
-    --red-dim: rgba(220,38,38,0.06);
-    --slate: #64748B;
-}
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-html {
-    color-scheme: light only !important;
-}
-
-html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
-    background: var(--bg) !important;
-    color: var(--text-primary) !important;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    line-height: 1.6;
+/* Force Inter font everywhere */
+html, body, [class*="css"], .stMarkdown, .stText {
+    font-family: 'Inter', sans-serif !important;
     -webkit-font-smoothing: antialiased;
 }
 
-@media (prefers-color-scheme: dark) {
-    html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
-        background: var(--bg) !important;
-        color: var(--text-primary) !important;
-    }
-    [data-testid="stSidebar"] { background: var(--surface) !important; }
-}
+/* Hide Streamlit Clutter */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+[data-testid="stToolbar"] {display: none;}
 
-[data-testid="stSidebar"] {
-    background: var(--surface) !important;
-    border-right: 1px solid var(--border) !important;
+/* Typography Classes */
+.brand-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    margin-bottom: 0px;
 }
-[data-testid="stSidebar"] > div:first-child { padding-top: 0; }
-
-#MainMenu, footer, header { visibility: hidden; }
-[data-testid="stToolbar"] { display: none; }
-
-[data-testid="collapsedControl"] {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    z-index: 9999 !important;
-    background: #FFFFFF !important;
-    border: 1px solid #CBD5E1 !important;
-    border-radius: 0 8px 8px 0 !important;
-}
-[data-testid="stSidebarCollapseButton"] {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    color: var(--text-secondary) !important;
-}
-
-/* ── Sidebar ── */
-.sidebar-brand {
-    padding: 2.25rem 1.75rem 1.75rem;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 1.75rem;
-}
-.sidebar-brand h2 {
-    font-family: 'Instrument Serif', serif;
-    font-size: 1.4rem;
+.brand-subtitle {
+    font-size: 0.85rem;
     font-weight: 400;
-    color: var(--text-primary);
-    letter-spacing: -0.01em;
-    margin-bottom: 0.25rem;
+    color: #888888;
+    letter-spacing: 0.02em;
+    margin-bottom: 2rem;
 }
-.sidebar-brand span { color: var(--accent); }
-.sidebar-brand p {
-    font-size: 0.72rem;
-    color: var(--text-muted);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    font-weight: 500;
-}
-.sidebar-section-label {
-    font-size: 0.68rem;
+.section-header {
+    font-size: 0.75rem;
     font-weight: 600;
-    color: var(--text-muted);
-    letter-spacing: 0.12em;
     text-transform: uppercase;
-    padding: 0 1.75rem;
-    margin-bottom: 0.6rem;
-}
-.privacy-box {
-    margin: 1.5rem 1.25rem;
-    padding: 1.1rem 1.25rem;
-    background: rgba(59,130,246,0.04);
-    border: 1px solid var(--accent-border);
-    border-radius: 10px;
-    font-size: 0.76rem;
-    color: var(--text-secondary);
-    line-height: 1.7;
-}
-.privacy-box strong {
-    display: block;
-    font-size: 0.67rem;
-    font-weight: 600;
-    color: var(--accent);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 0.6rem;
-}
-.version-tag {
-    font-size: 0.67rem;
-    color: var(--text-muted);
-    padding: 1.5rem 1.75rem;
-    font-family: 'DM Mono', monospace;
-}
-
-/* ── Main header ── */
-.clinical-header {
-    padding: 3rem 0 2.5rem;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 2.5rem;
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-}
-.pixel-art-container {
-    background: var(--surface);
-    border: 1px solid var(--border-light);
-    border-radius: 14px;
-    padding: 14px;
-    display: inline-block;
-    flex-shrink: 0;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-}
-.pixel-grid {
-    display: grid;
-    grid-template-columns: repeat(11, 10px);
-    grid-template-rows: repeat(11, 10px);
-    gap: 2px;
-}
-.px { width: 10px; height: 10px; border-radius: 2px; }
-.px-on { background: var(--accent); box-shadow: 0 0 5px rgba(59,130,246,0.5); }
-.px-off { background: transparent; }
-
-.header-text { flex: 1; }
-.header-text h1 {
-    font-family: 'Instrument Serif', serif;
-    font-size: 2.4rem;
-    font-weight: 400;
-    color: var(--text-primary);
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    margin-bottom: 0.5rem;
-}
-.header-text h1 em { color: var(--accent); font-style: italic; }
-.header-text p {
-    font-size: 0.88rem;
-    color: var(--text-secondary);
-    font-weight: 400;
-    margin-bottom: 1rem;
-    letter-spacing: 0;
-}
-.header-chips { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-.chip {
-    font-size: 0.67rem;
-    font-weight: 500;
-    padding: 0.2rem 0.65rem;
-    border-radius: 20px;
-    letter-spacing: 0.04em;
-    font-family: 'DM Sans', sans-serif;
-}
-.chip-blue { background: var(--accent-dim); color: #1E40AF; border: 1px solid var(--accent-border); }
-.chip-slate { background: rgba(100,116,139,0.1); color: var(--slate); border: 1px solid rgba(100,116,139,0.2); }
-.chip-grey { background: rgba(74,82,104,0.12); color: var(--text-muted); border: 1px solid var(--border-light); }
-
-/* ── Transcript workspace ── */
-.workspace-header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: 0.6rem;
-}
-.workspace-label {
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--text-secondary);
     letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
-.workspace-hint {
-    font-size: 0.72rem;
-    color: var(--text-muted);
-    font-style: italic;
+    color: #666666;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #333333;
+    padding-bottom: 0.5rem;
 }
 
-/* ── Inputs ── */
+/* Sidebar Styling */
+[data-testid="stSidebar"] {
+    background-color: #0E1117 !important;
+    border-right: 1px solid #222222 !important;
+}
+
+/* Input Areas */
 [data-testid="stTextArea"] textarea {
-    background: var(--surface) !important;
-    border: 1px solid var(--border-light) !important;
-    border-radius: 10px !important;
-    color: var(--text-primary) !important;
-    font-family: 'DM Sans', sans-serif !important;
-    font-size: 0.925rem !important;
-    line-height: 1.8 !important;
-    padding: 1.25rem 1.5rem !important;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
-}
-[data-testid="stTextArea"] textarea::placeholder { color: var(--text-muted) !important; }
-[data-testid="stTextArea"] textarea:focus {
-    border-color: var(--accent) !important;
-    box-shadow: 0 0 0 3px rgba(59,130,246,0.08) !important;
-    outline: none !important;
-}
-[data-testid="stTextInput"] input {
-    background: var(--surface) !important;
-    border: 1px solid var(--border-light) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.9rem !important;
+    line-height: 1.6 !important;
     border-radius: 8px !important;
-    color: var(--text-primary) !important;
-    font-family: 'DM Mono', monospace !important;
-    font-size: 0.8rem !important;
-    padding: 0.6rem 0.9rem !important;
+    border: 1px solid #333333 !important;
+    background-color: #111111 !important;
+    padding: 1rem !important;
+    transition: all 0.2s ease;
 }
-[data-testid="stTextInput"] input:focus {
-    border-color: var(--accent) !important;
-    box-shadow: 0 0 0 3px rgba(59,130,246,0.08) !important;
+[data-testid="stTextArea"] textarea:focus {
+    border-color: #3B82F6 !important;
+    box-shadow: 0 0 0 1px #3B82F6 !important;
 }
 
-/* ── Tabs ── */
+/* Buttons */
+.stButton>button {
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.01em !important;
+    border: 1px solid #333333 !important;
+    background-color: #1A1A1A !important;
+    transition: all 0.2s ease;
+}
+.stButton>button:hover {
+    border-color: #888888 !important;
+    background-color: #222222 !important;
+}
+/* Primary Button Override */
+.stButton>button[kind="primary"] {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+    border: none !important;
+    font-weight: 600 !important;
+}
+.stButton>button[kind="primary"]:hover {
+    background-color: #E5E5E5 !important;
+}
+
+/* Tabs */
 [data-testid="stTabs"] [data-baseweb="tab-list"] {
-    background: var(--surface);
-    border-radius: 8px;
-    padding: 3px;
-    gap: 2px;
-    border: 1px solid var(--border);
-    width: fit-content;
-    margin-bottom: 1.5rem;
+    gap: 2rem;
+    border-bottom: 1px solid #333333;
 }
 [data-testid="stTabs"] [data-baseweb="tab"] {
-    background: transparent !important;
-    color: var(--text-secondary) !important;
-    font-family: 'DM Sans', sans-serif !important;
-    font-size: 0.83rem !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.85rem !important;
     font-weight: 500 !important;
-    border-radius: 6px !important;
-    padding: 0.4rem 1.1rem !important;
-    border: none !important;
-    transition: all 0.15s !important;
+    color: #888888 !important;
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+    border-bottom: 2px solid transparent !important;
 }
 [data-testid="stTabs"] [aria-selected="true"] {
-    background: var(--accent) !important;
     color: #FFFFFF !important;
+    border-bottom: 2px solid #FFFFFF !important;
 }
 
-/* ── Buttons ── */
-[data-testid="stButton"] > button[kind="primary"] {
-    background: var(--accent) !important;
-    color: #FFFFFF !important;
-    border: none !important;
-    border-radius: 8px !important;
-    font-family: 'DM Sans', sans-serif !important;
-    font-size: 0.9rem !important;
-    font-weight: 600 !important;
-    padding: 0.7rem 1.5rem !important;
-    width: 100% !important;
-    letter-spacing: 0.01em !important;
-    transition: background 0.15s ease, box-shadow 0.15s ease !important;
-    margin-top: 0.75rem !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
-}
-[data-testid="stButton"] > button[kind="primary"]:hover {
-    background: var(--accent-hover) !important;
-    box-shadow: 0 4px 20px rgba(59,130,246,0.3) !important;
-    transform: none !important;
-}
-[data-testid="stButton"] > button[kind="secondary"] {
-    background: transparent !important;
-    color: var(--text-muted) !important;
-    border: 1px solid var(--border-light) !important;
-    border-radius: 6px !important;
-    font-family: 'DM Sans', sans-serif !important;
-    font-size: 0.75rem !important;
-    font-weight: 500 !important;
-    padding: 0.3rem 0.8rem !important;
-    transition: all 0.15s !important;
-}
-[data-testid="stButton"] > button[kind="secondary"]:hover {
-    border-color: var(--accent) !important;
-    color: var(--accent) !important;
-    background: var(--accent-dim) !important;
-}
-
-/* ── Risk banner ── */
-.risk-banner {
-    background: var(--red-dim);
-    border: none;
-    border-left: 3px solid var(--red);
-    border-radius: 0 10px 10px 0;
-    padding: 1.25rem 1.5rem;
+/* Risk Banner */
+.risk-alert {
+    background-color: rgba(220, 38, 38, 0.1);
+    border-left: 4px solid #DC2626;
+    padding: 1rem 1.5rem;
+    border-radius: 0 6px 6px 0;
     margin-bottom: 2rem;
-    animation: pulse-red 4s ease-in-out infinite;
 }
-@keyframes pulse-red {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.1); }
-    50% { box-shadow: 0 0 0 4px rgba(239,68,68,0); }
-}
-.risk-banner h3 {
-    color: var(--red);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.88rem;
-    font-weight: 600;
-    margin-bottom: 0.35rem;
-    letter-spacing: 0.01em;
-}
-.risk-banner p {
-    color: #B91C1C;
-    font-size: 0.83rem;
-    margin-bottom: 0.85rem;
-    font-weight: 400;
-}
-.risk-quote {
-    background: rgba(220,38,38,0.06);
-    border-left: 2px solid rgba(220,38,38,0.4);
-    border-radius: 0 4px 4px 0;
-    padding: 0.65rem 1rem;
-    font-style: italic;
+.risk-alert-title {
+    color: #EF4444;
+    font-weight: 700;
     font-size: 0.85rem;
-    color: #B91C1C;
-    line-height: 1.6;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+.risk-alert-text {
+    color: #FCA5A5;
+    font-size: 0.9rem;
+    font-family: 'JetBrains Mono', monospace;
 }
 
-/* ── Output section ── */
-.output-section-label {
+/* Document Display Content */
+.doc-label {
     font-size: 0.7rem;
     font-weight: 600;
-    color: var(--text-muted);
-    letter-spacing: 0.12em;
+    color: #666666;
     text-transform: uppercase;
-    margin-bottom: 1.25rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.05em;
+    margin-top: 1.5rem;
+    margin-bottom: 0.25rem;
 }
-
-/* ── Cards ── */
-.output-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 2rem 2.25rem;
-    margin-bottom: 1.5rem;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-}
-.output-card:hover {
-    border-color: var(--border-light);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-}
-.output-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    border-radius: 12px 12px 0 0;
-}
-.card-soap::before { background: var(--accent); }
-.card-gp::before { background: #8B5CF6; }
-.card-formulation::before { background: var(--green); }
-.card-risk::before { background: var(--red); }
-
-.output-card h3 {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-.output-card .content {
-    font-size: 0.875rem;
-    line-height: 1.9;
-    color: var(--text-secondary);
-    white-space: pre-wrap;
-}
-
-/* ── SOAP sections ── */
-.soap-label {
-    font-size: 0.67rem;
-    font-weight: 600;
-    color: var(--accent);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin: 1.5rem 0 0.5rem;
-}
-.soap-label:first-of-type { margin-top: 0; }
-.soap-content {
-    font-size: 0.875rem;
-    line-height: 1.85;
-    color: var(--text-secondary);
-    padding: 0.85rem 1.1rem;
-    background: rgba(0,0,0,0.02);
-    border-left: 3px solid var(--border-light);
-    border-radius: 0 6px 6px 0;
-}
-
-/* ── Badges ── */
-.badge-safe {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: var(--green-dim);
-    border: 1px solid rgba(16,185,129,0.2);
-    color: var(--green);
-    border-radius: 20px;
-    padding: 0.3rem 0.9rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    letter-spacing: 0.02em;
-}
-.badge-risk {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: var(--red-dim);
-    border: 1px solid rgba(239,68,68,0.2);
-    color: var(--red);
-    border-radius: 20px;
-    padding: 0.3rem 0.9rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    letter-spacing: 0.02em;
-}
-
-/* ── Session history ── */
-.session-item {
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    padding: 0.55rem 0.85rem;
-    margin-bottom: 0.4rem;
-    font-size: 0.78rem;
-    color: var(--text-secondary);
-    transition: all 0.15s;
-    cursor: pointer;
-}
-.session-item:hover {
-    border-color: var(--accent);
-    color: var(--text-primary);
-    background: var(--accent-dim);
-}
-
-/* ── Coming soon ── */
-.coming-soon {
-    background: var(--surface);
-    border: 1px dashed var(--border-light);
-    border-radius: 10px;
-    padding: 2.5rem;
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 0.85rem;
-}
-.coming-soon span { display: block; font-size: 1.5rem; margin-bottom: 0.6rem; }
-
-/* ── Footer ── */
-.clinical-footer {
-    margin-top: 3rem;
-    padding: 1.25rem 0;
-    border-top: 1px solid var(--border);
-    text-align: center;
-    font-size: 0.72rem;
-    color: var(--text-muted);
+.doc-content {
+    font-size: 0.95rem;
     line-height: 1.6;
+    color: #E2E8F0;
+    white-space: pre-wrap;
+    background: #111111;
+    padding: 1rem;
+    border: 1px solid #222222;
+    border-radius: 6px;
 }
-
-/* ── Labels ── */
-label, [data-testid="stWidgetLabel"] {
-    color: var(--text-secondary) !important;
-    font-size: 0.75rem !important;
-    font-weight: 500 !important;
-    letter-spacing: 0.04em !important;
-}
-
-hr { border-color: var(--border) !important; }
-[data-testid="stSpinner"] { color: var(--accent) !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -530,134 +168,45 @@ if "history" not in st.session_state:
     st.session_state.history = []
 if "last_result" not in st.session_state:
     st.session_state.last_result = None
-if "copied" not in st.session_state:
-    st.session_state.copied = {}
 if "api_key" not in st.session_state:
     st.session_state.api_key = ""
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("""
-    <div class="sidebar-brand">
-        <h2><span>Admin</span> Assassin</h2>
-        <p>Clinical AI Scribe</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown('<p class="brand-title">Admin Assassin</p>', unsafe_allow_html=True)
+    st.markdown('<p class="brand-subtitle">Clinical Infrastructure v1.0</p>', unsafe_allow_html=True)
 
-    st.markdown("---")
-
-    # Session history
-    st.markdown('<p style="font-size:0.72rem;color:#8B9CB6;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.75rem;">Recent Sessions</p>', unsafe_allow_html=True)
-
-    if st.session_state.history:
-        for i, session in enumerate(reversed(st.session_state.history[-5:])):
-            if st.button(f"📋 Session {session['time']}", key=f"hist_{i}", use_container_width=True):
-                st.session_state.last_result = session["result"]
-    else:
-        st.markdown('<p style="font-size:0.78rem;color:#3D4560;font-style:italic;">No sessions yet</p>', unsafe_allow_html=True)
-
-    st.markdown("---")
-
-    st.markdown("""
-    <div class="privacy-box">
-        <strong>🔒 Privacy Notice</strong>
-        This tool processes anonymised transcripts only.
-        All AI output requires clinician review before use.
-        No patient data is stored or retained.
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown('<div class="version-tag">v1.0 — Beta</div>', unsafe_allow_html=True)
-
-# ── Generate pixel brain ──────────────────────────────────────────────────────
-brain_map = [
-    [0,0,1,1,0,0,0,1,1,0,0],
-    [0,1,1,1,1,0,1,1,1,1,0],
-    [1,1,1,1,1,1,1,1,1,1,1],
-    [1,1,1,1,1,1,1,1,1,1,1],
-    [1,1,1,0,1,1,1,0,1,1,1],
-    [0,1,1,1,1,1,1,1,1,1,0],
-    [0,0,1,1,1,1,1,1,1,0,0],
-    [0,0,0,1,1,1,1,1,0,0,0],
-    [0,0,0,1,0,1,0,1,0,0,0],
-    [0,0,0,1,1,1,1,1,0,0,0],
-    [0,0,0,0,1,1,1,0,0,0,0],
-]
-brain_html = "".join(
-    f'<div class="px {"px-on" if cell else "px-off"}"></div>'
-    for row in brain_map for cell in row
-)
-
-# ── Main panel ────────────────────────────────────────────────────────────────
-st.markdown(f"""
-<div class="clinical-header">
-    <div class="terminal-logo">
-        <div class="pixel-art-container">
-            <div class="pixel-grid">
-                {brain_html}
-            </div>
-        </div>
-    </div>
-    <div class="header-text">
-        <h1>Admin <em>Assassin</em></h1>
-        <p>Privacy-first clinical scribe for CBT therapists</p>
-        <div class="header-chips">
-            <span class="chip chip-blue">Claude Sonnet</span>
-            <span class="chip chip-slate">CBT Clinical AI</span>
-            <span class="chip chip-grey">v1.0 Beta</span>
-        </div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-# ── API Key ───────────────────────────────────────────────────────────────────
-with st.expander("🔑  Anthropic API Key", expanded=not bool(st.session_state.api_key)):
-    _key_input = st.text_input(
-        "Anthropic API Key",
-        type="password",
-        placeholder="sk-ant-...",
-        value=st.session_state.api_key,
-        label_visibility="collapsed"
-    )
+    _key_input = st.text_input("Anthropic API Key", type="password", placeholder="sk-ant-...", value=st.session_state.api_key)
     if _key_input:
         st.session_state.api_key = _key_input
-    if st.session_state.api_key:
-        st.caption("✅  API key saved for this session")
+        
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    
+    st.markdown('<p class="section-header">Recent Sessions</p>', unsafe_allow_html=True)
+    if st.session_state.history:
+        for i, session in enumerate(reversed(st.session_state.history[-5:])):
+            if st.button(f"Session {session['time']}", key=f"hist_{i}", use_container_width=True):
+                st.session_state.last_result = session["result"]
+    else:
+        st.caption("No recent sessions.")
 
-api_key = st.session_state.api_key
+# ── Main panel ────────────────────────────────────────────────────────────────
+st.markdown('<p class="brand-title" style="font-size: 2.25rem;">Clinical Intelligence Scribe</p>', unsafe_allow_html=True)
+st.markdown('<p class="brand-subtitle" style="font-size: 1rem;">Generate supervision-quality CBT documentation from anonymised session transcripts.</p>', unsafe_allow_html=True)
 
-# ── Input tabs ────────────────────────────────────────────────────────────────
-tab1, tab2 = st.tabs(["📝  Paste Transcript", "🎙  Upload Audio  (Coming in V2)"])
+# ── Input Area ────────────────────────────────────────────────────────────────
+transcript = st.text_area(
+    label="Transcript Input",
+    height=300,
+    placeholder="Paste session transcript here. Use initials only. Ensure full dialogue for accurate behavioural activation tracking...",
+    label_visibility="collapsed"
+)
 
-with tab1:
-    st.markdown("""
-    <div class="workspace-header">
-        <span class="workspace-label">Session Transcript</span>
-        <span class="workspace-hint">Use initials — anonymised transcripts only</span>
-    </div>
-    """, unsafe_allow_html=True)
+_, btn_col, _ = st.columns([1, 2, 1])
+with btn_col:
+    generate_btn = st.button("Generate Clinical Artifacts", type="primary", use_container_width=True)
 
-    transcript = st.text_area(
-        label="Session Transcript",
-        height=280,
-        placeholder="Paste your session transcript here.\n\nFor best results, include the full session dialogue.\nPatient name is not required — use initials or remove entirely.",
-        label_visibility="collapsed"
-    )
-
-    _, btn_col = st.columns([2, 1])
-    with btn_col:
-        generate_btn = st.button("Generate Documentation", type="primary")
-
-with tab2:
-    st.markdown("""
-    <div class="coming-soon">
-        <span>🎙</span>
-        Audio upload + Whisper transcription coming in V2.<br>
-        Record directly in the therapy room — no laptop needed.
-    </div>
-    """, unsafe_allow_html=True)
-
-# ── System prompt ─────────────────────────────────────────────────────────────
+# ── System prompt (UNCHANGED - MASTERCLASS CLINICAL LOGIC) ───────────────────
 SYSTEM_PROMPT = """You are a senior CBT clinical supervisor with 20 years experience in NHS IAPT and Talking Therapies settings. You must analyse the session transcript using the specific clinical framework below. This is not general CBT knowledge — this is the exact framework you must apply.
 
 === CLINICAL KNOWLEDGE FRAMEWORK ===
@@ -778,27 +327,24 @@ Return ONLY raw JSON — no markdown, no backticks, no preamble:
 
 # ── Generation logic ──────────────────────────────────────────────────────────
 if generate_btn:
-    if not api_key:
-        st.error("⚠️ Please enter your Anthropic API key in the sidebar.")
+    if not st.session_state.api_key:
+        st.error("Authentication Error: Missing Anthropic API Key.")
     elif not transcript.strip():
-        st.error("⚠️ Please paste a session transcript before generating.")
+        st.error("Validation Error: Transcript input is empty.")
     else:
-        with st.spinner("Analysing transcript..."):
+        with st.spinner("Executing Clinical Skill Graph Analysis..."):
             try:
-                client = anthropic.Anthropic(api_key=api_key)
+                client = anthropic.Anthropic(api_key=st.session_state.api_key)
                 response = client.messages.create(
-                    model="claude-sonnet-4-6",
+                    model="claude-3-5-sonnet-20241022", # UPDATED TO CORRECT MODEL
                     max_tokens=8192,
                     system=SYSTEM_PROMPT,
-                    messages=[
-                        {"role": "user", "content": transcript}
-                    ]
+                    messages=[{"role": "user", "content": transcript}]
                 )
-                raw = response.content[0].text
-                # Strip markdown fences if present
-                raw = raw.strip()
+                raw = response.content[0].text.strip()
                 if raw.startswith("```"):
                     raw = raw.split("\n", 1)[1].rsplit("```", 1)[0]
+                
                 result = json.loads(raw)
                 st.session_state.last_result = result
                 st.session_state.history.append({
@@ -806,95 +352,62 @@ if generate_btn:
                     "result": result
                 })
             except json.JSONDecodeError:
-                st.error("⚠️ The AI returned an unexpected format. Please try again.")
+                st.error("Processing Error: LLM returned invalid JSON structure.")
             except Exception as e:
-                st.error(f"⚠️ Error: {str(e)}")
+                st.error(f"System Error: {str(e)}")
 
 # ── Output rendering ──────────────────────────────────────────────────────────
 if st.session_state.last_result:
     r = st.session_state.last_result
+    st.markdown("<br><hr style='border-color: #333333;'><br>", unsafe_allow_html=True)
 
-    # Risk banner
+    # Risk Banner (Full width, top priority)
     if r.get("risk_detected"):
         st.markdown(f"""
-        <div class="risk-banner">
-            <h3>⚠️ CLINICAL RISK DETECTED — Review Required</h3>
-            <p>The following content has been flagged. This requires immediate clinical review before proceeding.</p>
-            <div class="risk-quote">"{r.get('risk_content', 'Risk phrase not extracted')}"</div>
+        <div class="risk-alert">
+            <div class="risk-alert-title">Critical Risk Detected</div>
+            <div class="risk-alert-text">"{r.get('risk_content', 'Review transcript immediately.')}"</div>
         </div>
         """, unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    # Clean Tabbed Interface
+    tab_soap, tab_gp, tab_form, tab_risk = st.tabs([
+        "📄 SOAP Note", 
+        "🏥 GP Letter", 
+        "🧠 CBT Formulation", 
+        "🛡️ Risk Triage"
+    ])
 
-    st.markdown('<div class="output-section-label">Clinical Documentation</div>', unsafe_allow_html=True)
-
-    # Top row — SOAP + GP Letter
-    col1, col2 = st.columns(2)
-
-    with col1:
+    with tab_soap:
         soap = r.get("soap_note", {})
-        soap_text = f"S: {soap.get('subjective','')}\nO: {soap.get('objective','')}\nA: {soap.get('assessment','')}\nP: {soap.get('plan','')}"
-        st.markdown(f"""
-        <div class="output-card card-soap">
-            <h3>📋 SOAP Note</h3>
-            <div class="soap-label">S — Subjective</div>
-            <div class="soap-content">{soap.get('subjective', '—')}</div>
-            <div class="soap-label">O — Objective</div>
-            <div class="soap-content">{soap.get('objective', '—')}</div>
-            <div class="soap-label">A — Assessment</div>
-            <div class="soap-content">{soap.get('assessment', '—')}</div>
-            <div class="soap-label">P — Plan</div>
-            <div class="soap-content">{soap.get('plan', '—')}</div>
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button("Copy SOAP Note", key="copy_soap"):
-            st.code(soap_text, language=None)
+        
+        st.markdown('<div class="doc-label">Subjective</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="doc-content">{soap.get("subjective", "—")}</div>', unsafe_allow_html=True)
+        
+        st.markdown('<div class="doc-label">Objective</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="doc-content">{soap.get("objective", "—")}</div>', unsafe_allow_html=True)
+        
+        st.markdown('<div class="doc-label">Assessment</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="doc-content">{soap.get("assessment", "—")}</div>', unsafe_allow_html=True)
+        
+        st.markdown('<div class="doc-label">Plan</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="doc-content">{soap.get("plan", "—")}</div>', unsafe_allow_html=True)
 
-    with col2:
-        gp_letter = r.get("gp_letter", "")
-        st.markdown(f"""
-        <div class="output-card card-gp">
-            <h3>✉️ GP Letter</h3>
-            <div class="content">{gp_letter}</div>
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button("Copy GP Letter", key="copy_gp"):
-            st.code(gp_letter, language=None)
+    with tab_gp:
+        st.markdown('<div class="doc-label">Generated Communication</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="doc-content">{r.get("gp_letter", "—")}</div>', unsafe_allow_html=True)
 
-    # Bottom row — CBT Formulation + Risk Summary
-    col3, col4 = st.columns(2)
+    with tab_form:
+        st.markdown('<div class="doc-label">Primary Target</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="doc-content">{r.get("hot_thought", "—")}</div>', unsafe_allow_html=True)
+        
+        st.markdown('<div class="doc-label">Maintenance Cycle</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="doc-content">{r.get("maintenance_cycle", "—")}</div>', unsafe_allow_html=True)
+        
+        st.markdown('<div class="doc-label">Avoidance / Safety Behaviours</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="doc-content">{r.get("safety_behaviours", "—")}</div>', unsafe_allow_html=True)
 
-    with col3:
-        formulation_text = f"Hot Thought: {r.get('hot_thought','')}\n\nMaintenance Cycle: {r.get('maintenance_cycle','')}\n\nSafety Behaviours: {r.get('safety_behaviours','')}"
-        st.markdown(f"""
-        <div class="output-card card-formulation">
-            <h3>🧠 CBT Formulation</h3>
-            <div class="soap-label">Hot Thought</div>
-            <div class="soap-content">{r.get('hot_thought', '—')}</div>
-            <div class="soap-label">Maintenance Cycle</div>
-            <div class="soap-content">{r.get('maintenance_cycle', '—')}</div>
-            <div class="soap-label">Safety Behaviours</div>
-            <div class="soap-content">{r.get('safety_behaviours', '—')}</div>
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button("Copy Formulation", key="copy_form"):
-            st.code(formulation_text, language=None)
-
-    with col4:
-        risk_badge = '<div class="badge-risk">⚠ Risk Detected</div>' if r.get("risk_detected") else '<div class="badge-safe">✓ No Risk Identified</div>'
-        risk_text = r.get('risk_summary', '—')
-        st.markdown(f"""
-        <div class="output-card card-risk">
-            <h3>🛡 Risk Summary</h3>
-            {risk_badge}
-            <div class="content">{risk_text}</div>
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button("Copy Risk Summary", key="copy_risk"):
-            st.code(risk_text, language=None)
-
-    st.markdown("""
-    <div class="clinical-footer">
-        All output requires clinician review before use. Admin Assassin does not store patient data.
-    </div>
-    """, unsafe_allow_html=True)
+    with tab_risk:
+        status = "⚠️ Active Risk Documented" if r.get("risk_detected") else "✓ No Clinical Risk Identified"
+        st.markdown(f'<div class="doc-label">Risk Status: {status}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="doc-content">{r.get("risk_summary", "—")}</div>', unsafe_allow_html=True)
