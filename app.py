@@ -166,12 +166,12 @@ html, body, [data-testid="stAppViewContainer"] {
 }
 .px-off { background: transparent; }
 .terminal-header {
-    padding: 2.5rem 0 2rem 0;
+    padding: 3.5rem 0 3rem 0;
     border-bottom: 1px solid #2D3141;
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 2.5rem;
 }
 .terminal-logo {
     flex-shrink: 0;
@@ -206,9 +206,10 @@ html, body, [data-testid="stAppViewContainer"] {
 }
 .terminal-title p {
     color: #8B9CB6;
-    font-size: 0.85rem;
-    margin: 0 0 0.75rem 0;
-    font-family: 'DM Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 400;
+    margin: 0 0 0.9rem 0;
+    font-family: 'DM Sans', sans-serif;
 }
 .terminal-badges {
     display: flex;
@@ -216,15 +217,16 @@ html, body, [data-testid="stAppViewContainer"] {
     flex-wrap: wrap;
 }
 .t-badge {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    padding: 0.2rem 0.6rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 500;
+    padding: 0.18rem 0.55rem;
     border-radius: 4px;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
 }
 .t-badge-blue { background: rgba(74,158,255,0.12); color: #4A9EFF; border: 1px solid rgba(74,158,255,0.25); }
-.t-badge-green { background: rgba(0,196,140,0.1); color: #00C48C; border: 1px solid rgba(0,196,140,0.25); }
+.t-badge-green { background: rgba(100,116,139,0.1); color: #64748B; border: 1px solid rgba(100,116,139,0.25); }
 .t-badge-grey { background: rgba(139,156,182,0.1); color: #8B9CB6; border: 1px solid rgba(139,156,182,0.2); }
 
 /* ── Inputs ── */
@@ -353,8 +355,8 @@ html, body, [data-testid="stAppViewContainer"] {
     background: linear-gradient(145deg, #1E2130, #191C28);
     border: 1px solid #2D3141;
     border-radius: 16px;
-    padding: 1.5rem;
-    margin-bottom: 1.25rem;
+    padding: 1.75rem;
+    margin-bottom: 1.75rem;
     height: 100%;
     position: relative;
     overflow: hidden;
@@ -368,19 +370,22 @@ html, body, [data-testid="stAppViewContainer"] {
     background: linear-gradient(90deg, #4A9EFF, transparent);
     border-radius: 16px 16px 0 0;
 }
+.output-card-green::before { background: linear-gradient(90deg, #10B981, transparent); }
+.output-card-red::before { background: linear-gradient(90deg, #FF4444, transparent); }
+.output-card-indigo::before { background: linear-gradient(90deg, #818CF8, transparent); }
 .output-card:hover {
     border-color: rgba(74, 158, 255, 0.3);
     box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 0 1px rgba(74,158,255,0.08);
 }
 .output-card h3 {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.72rem;
-    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
     color: #4A9EFF;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    margin: 0 0 1.25rem 0;
-    padding-bottom: 0.75rem;
+    margin: 0 0 1.5rem 0;
+    padding-bottom: 0.85rem;
     border-bottom: 1px solid #2D3141;
     display: flex;
     align-items: center;
@@ -513,8 +518,20 @@ hr { border-color: #2D3141 !important; }
 }
 [data-testid="stExpander"] summary {
     color: #8B9CB6 !important;
-    font-family: 'DM Mono', monospace !important;
+    font-family: 'DM Sans', sans-serif !important;
     font-size: 0.75rem !important;
+}
+
+/* ── Clinical footer ── */
+.clinical-footer {
+    margin-top: 3rem;
+    padding: 1.25rem 0 2rem 0;
+    border-top: 1px solid #2D3141;
+    text-align: center;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    color: #3D4560;
+    line-height: 1.6;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -597,7 +614,7 @@ st.markdown(
     f'<div class="terminal-logo">{brain_html}</div>'
     f'<div class="terminal-title">'
     f'<h1><span>Admin</span> Assassin</h1>'
-    f'<p>// privacy-first clinical scribe for CBT therapists</p>'
+    f'<p>Privacy-first clinical scribe for CBT therapists</p>'
     f'<div class="terminal-badges">'
     f'<span class="t-badge t-badge-blue">Claude Opus</span>'
     f'<span class="t-badge t-badge-green">CBT Clinical AI</span>'
@@ -615,9 +632,7 @@ with tab1:
         label="Session Transcript",
         height=280,
         placeholder=(
-            "Paste your session transcript here.\n\n"
-            "For best results, include the full session dialogue.\n"
-            "Patient name is not required — use initials or remove entirely."
+            "Paste session transcript here. Use initials only — no full patient names."
         ),
         label_visibility="collapsed",
     )
@@ -715,7 +730,7 @@ if st.session_state.last_result:
     with col2:
         gp_letter = r.get("gp_letter", "")
         st.markdown(f"""
-        <div class="output-card">
+        <div class="output-card output-card-indigo">
             <h3>✉️ GP Letter</h3>
             <div class="content">{safe(gp_letter)}</div>
         </div>
@@ -728,7 +743,7 @@ if st.session_state.last_result:
 
     with col3:
         st.markdown(f"""
-        <div class="output-card">
+        <div class="output-card output-card-green">
             <h3>🧠 CBT Formulation</h3>
             <div class="soap-label">Hot Thought</div>
             <div class="soap-content">{safe(r.get('hot_thought'))}</div>
@@ -754,7 +769,7 @@ if st.session_state.last_result:
         )
         risk_text = r.get("risk_summary", "—")
         st.markdown(f"""
-        <div class="output-card">
+        <div class="output-card output-card-red">
             <h3>🛡 Risk Summary</h3>
             {risk_badge}
             <div class="content">{safe(risk_text)}</div>
@@ -762,3 +777,9 @@ if st.session_state.last_result:
         """, unsafe_allow_html=True)
         with st.expander("📋 Copy Risk Summary"):
             st.code(risk_text, language=None)
+
+st.markdown("""
+<div class="clinical-footer">
+    All output requires clinician review before use. Admin Assassin does not store patient data.
+</div>
+""", unsafe_allow_html=True)
