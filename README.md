@@ -84,6 +84,22 @@ Admin Assassin with the full depression skill graph has been stress-tested again
 
 ---
 
+## Architecture Documentation
+
+The next stage of Admin Assassin moves from a single system prompt to a multi-agent orchestrator built on explicit context engineering principles. The design is documented in full:
+
+- **[Context Engineering Principles](docs/context_engineering_principles.md)** — Five architectural principles for clinical AI: context rot mitigation, rules vs examples, specialist agent prompt calibration, the clinical handover format, and cross-session memory. Each addresses a specific failure mode with a specific engineering response.
+- **[Multi-Agent Orchestrator Architecture](docs/orchestrator_architecture.md)** — The full system design: a deterministic trigger table that routes each transcript to 3–6 specialist agents (Risk, Measurement, condition-specific), a verification gate, and unified output assembly. The orchestrator never generates clinical content — it reads, classifies, routes, and merges.
+
+Key design decisions:
+
+- **Deterministic safety routing.** Risk detection is pattern-matched, not model-inferred. A missed trigger is a fixable configuration error; a model missing a risk signal due to context overload is a silent clinical failure.
+- **Lean context windows.** No agent ever holds more than ~800 lines of clinical knowledge, keeping every agent in the zone where attention mechanisms work reliably.
+- **Contract-enforced completion.** Every specialist agent self-attests against a completion contract (including cross-session memory updates) before its output is accepted.
+- **Human-in-the-loop, always.** Every package ends with the "Awaiting Therapist Review" badge. Nothing is finalised without clinical approval.
+
+---
+
 ## Privacy Architecture
 
 Patient data is never stored. Patient data is never trained on.
